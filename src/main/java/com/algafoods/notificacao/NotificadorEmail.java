@@ -1,10 +1,12 @@
 package com.algafoods.notificacao;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.algafoods.model.Cliente;
 
-//@Component
+@Component
+@Qualifier("EMAIL")
 public class NotificadorEmail implements Notificador{
 
 	public NotificadorEmail() {
@@ -13,7 +15,7 @@ public class NotificadorEmail implements Notificador{
 
 	@Override
 	public void notificar(Cliente cliente, String mensagem) {
-		System.out.printf("Notificando %s através do email %s: %s", cliente.getNome(), cliente.getEmail(), mensagem);
+		System.out.printf("Notificando %s através do email %s: %s \n", cliente.getNome(), cliente.getEmail(), mensagem);
 	}
 	
 }
