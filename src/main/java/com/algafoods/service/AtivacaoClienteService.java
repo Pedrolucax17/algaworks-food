@@ -5,13 +5,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.algafoods.model.Cliente;
+import com.algafoods.notificacao.NivelUrgencia;
 import com.algafoods.notificacao.Notificador;
+import com.algafoods.notificacao.TipoDoNotificador;
 
 @Component
 public class AtivacaoClienteService {
 	
 	@Autowired(required = false)
-	@Qualifier("EMAIL")
+	@TipoDoNotificador(NivelUrgencia.NORMAL)
 	private Notificador notificador;
 
 	public void ativar(Cliente cliente) {
