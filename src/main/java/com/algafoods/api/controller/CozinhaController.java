@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algafoods.domain.exception.EntidadeEmUsoException;
+import com.algafoods.domain.exception.EntidadeNaoEncontradaException;
 import com.algafoods.domain.model.Cozinha;
 import com.algafoods.domain.repository.CozinhaRepository;
+import com.algafoods.domain.service.CozinhaService;
 
 @RestController
 @RequestMapping("/cozinhas")
@@ -27,6 +29,9 @@ public class CozinhaController {
 
 	@Autowired
 	private CozinhaRepository cozinhaRepository;
+	
+	@Autowired
+	private CozinhaService cozinhaService;
 	
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
 	@ResponseStatus(HttpStatus.OK)
@@ -69,16 +74,15 @@ public class CozinhaController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Cozinha> remover(@PathVariable Long id){
 		try {
-			Cozinha cozinhaAtual = cozinhaRepository.buscar(id);
-			
-			if(cozinhaAtual != null) {
-				cozinhaRepository.remover(cozinhaAtual);
-				
-				return ResponseEntity.noContent().build();
-			}
-			
+			cozinhaService.excluir(id);
+			return ResponseEntity.noContent().build();
+		}
+		
+		catch(EntidadeNaoEncontradaException e) {
 			return ResponseEntity.notFound().build();
-		}catch(DataIntegrityViolationException e) {
+		}
+		
+		catch(EntidadeEmUsoException e) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		}
 	}
