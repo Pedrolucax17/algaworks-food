@@ -1,5 +1,7 @@
 package com.algafoods.domain.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +23,17 @@ public class RestauranteService {
 	
 	public Restaurante salvar(Restaurante restaurante) {
 		
-		Cozinha cozinha = cozinhaRepository.buscar(restaurante.getCozinha().getId());
+		Long cozinhaId = restaurante.getCozinha().getId();
 		
-		if(cozinha == null) {
+		Optional<Cozinha> cozinha = cozinhaRepository.findById(cozinhaId);
+		
+		if(cozinha.isEmpty()) {
 			throw new EntidadeNaoEncontradaException(
-					String.format("Cozinha com id %d não existe", restaurante.getCozinha().getId())
+					String.format("Cozinha com id %d não existe", cozinhaId)
 			);
 		}
+		
+		restaurante.setCozinha(cozinha.get());
 		
 		return restauranteRepository.salvar(restaurante);
 	}
