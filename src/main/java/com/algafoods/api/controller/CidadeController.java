@@ -1,6 +1,7 @@
 package com.algafoods.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +32,15 @@ public class CidadeController {
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
 	public List<Cidade> listar(){
-		return cidadeRepository.listar();
+		return cidadeRepository.findAll();
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Cidade> buscar(@PathVariable Long id){
-		Cidade cidade = cidadeRepository.buscar(id);
+		Optional<Cidade> cidade = cidadeRepository.findById(id);
 		
-		if(cidade != null) {
-			return ResponseEntity.ok(cidade);
+		if(cidade.isPresent()) {
+			return ResponseEntity.ok(cidade.get());
 		}
 		
 		return ResponseEntity.notFound().build();
@@ -48,20 +49,20 @@ public class CidadeController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Cidade salvar(@RequestBody Cidade cidade) {
-		return cidadeRepository.salvar(cidade);
+		return cidadeRepository.save(cidade);
 	}
 	
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Cidade> atualizar(@PathVariable Long id, @RequestBody Cidade cidade){
-		Cidade cidadeAtual = cidadeRepository.buscar(id);
+		Optional<Cidade> cidadeAtual = cidadeRepository.findById(id);
 		
-		if(cidade != null) {
-			BeanUtils.copyProperties(cidade, cidadeAtual, "id");
+		if(cidadeAtual.isPresent()) {
+			BeanUtils.copyProperties(cidade, cidadeAtual.get(), "id");
 			
-			cidadeAtual = cidadeRepository.salvar(cidadeAtual);
+			Cidade cidadeSalva = cidadeRepository.save(cidadeAtual.get());
 			
-			return ResponseEntity.ok(cidadeAtual);
+			return ResponseEntity.ok(cidadeSalva);
 			
 		}
 		
@@ -71,7 +72,7 @@ public class CidadeController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Cidade> remover(@PathVariable Long id) {
 		try {
-			cidadeRepository.remover(id);
+			cidadeRepository.deleteById(id);
 			return ResponseEntity.noContent().build();
 		}
 		catch(EntidadeNaoEncontradaException e) {
