@@ -1,5 +1,6 @@
 package com.algafoods.api.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.algafoods.domain.exception.EntidadeEmUsoException;
 import com.algafoods.domain.exception.EntidadeNaoEncontradaException;
-import com.algafoods.domain.model.Cidade;
 import com.algafoods.domain.model.Restaurante;
 import com.algafoods.domain.repository.RestauranteRepository;
 import com.algafoods.domain.service.RestauranteService;
@@ -90,7 +90,7 @@ public class RestauranteController {
 	
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Cidade> remover(@PathVariable Long id) {
+	public ResponseEntity<Restaurante> remover(@PathVariable Long id) {
 		try {
 			restauranteRepository.deleteById(id);
 			return ResponseEntity.noContent().build();
@@ -101,6 +101,11 @@ public class RestauranteController {
 		catch(EntidadeEmUsoException e) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		}
+	}
+	
+	@GetMapping("/por-nome-e-frete")
+	public List<Restaurante> restaurantePorNomeFrete(String nome, BigDecimal taxaInicial, BigDecimal taxaFinal){
+		return restauranteRepository.find(nome, taxaInicial, taxaFinal);
 	}
 	
 }
