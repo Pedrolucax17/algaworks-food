@@ -1,5 +1,8 @@
 package com.algafoods.api.controller;
 
+import static com.algafoods.infrastructure.repository.spec.RestauranteSpecs.comFreteGratis;
+import static com.algafoods.infrastructure.repository.spec.RestauranteSpecs.comNomeSemelhante;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +26,6 @@ import com.algafoods.domain.exception.EntidadeNaoEncontradaException;
 import com.algafoods.domain.model.Restaurante;
 import com.algafoods.domain.repository.RestauranteRepository;
 import com.algafoods.domain.service.RestauranteService;
-import com.algafoods.infrastructure.repository.spec.RestauranteComFreteGratisSpec;
-import com.algafoods.infrastructure.repository.spec.RestauranteComNomeSemelhanteSpec;
 
 @RestController
 @RequestMapping("/restaurantes")
@@ -113,10 +114,7 @@ public class RestauranteController {
 	@GetMapping("/com-frete-gratis")
 	public List<Restaurante> restaurantesComFreteGratis(String nome){
 		
-		var comFreteGratis = new RestauranteComFreteGratisSpec();
-		var comNomeSemelhante = new RestauranteComNomeSemelhanteSpec(nome);
-		
-		return restauranteRepository.findAll(comFreteGratis.and(comNomeSemelhante));
+		return restauranteRepository.findAll(comFreteGratis().and(comNomeSemelhante(nome)));
 	}
 	
 }
