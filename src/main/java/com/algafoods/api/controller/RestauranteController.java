@@ -5,7 +5,6 @@ import static com.algafoods.infrastructure.repository.spec.RestauranteSpecs.comN
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,88 +32,65 @@ public class RestauranteController {
 
 	@Autowired
 	private RestauranteRepository restauranteRepository;
-	
+
 	@Autowired
 	private RestauranteService restauranteService;
-	
+
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	public List<Restaurante> listar(){
+	public List<Restaurante> listar() {
 		return restauranteRepository.findAll();
-	}	
-	
-	@GetMapping("/{id}")
-	public ResponseEntity<Restaurante> buscar(@PathVariable Long id) {
-		Restaurante restaurante = restauranteRepository.findById(id).orElse(null);
-		
-		if(restaurante != null) {
-			return ResponseEntity.ok(restaurante);
-		}
-		
-		return ResponseEntity.notFound().build();
 	}
-	
+
+	@GetMapping("/{id}")
+	public Restaurante buscar(@PathVariable Long id) {
+		return restauranteService.buscarOuFalhar(id);
+	}
+
 	@PostMapping
-	public ResponseEntity<?> salvar(@RequestBody Restaurante restaurante){
+	public ResponseEntity<?> salvar(@RequestBody Restaurante restaurante) {
 		try {
 			restaurante = restauranteService.salvar(restaurante);
-			return ResponseEntity.status(HttpStatus.CREATED)
-					.body(restaurante);
+			return ResponseEntity.status(HttpStatus.CREATED).body(restaurante);
+		} catch (EntidadeNaoEncontradaException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
 		}
-		catch(EntidadeNaoEncontradaException e) {
-			return ResponseEntity.badRequest()
-					.body(e.getMessage());
-		}
-		
+
 	}
-	
+
 	@PutMapping("/{id}")
-	public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Restaurante restaurante){
-		try {
-			Optional<Restaurante> restauranteAtual = restauranteRepository.findById(id);
-			
-			if(restauranteAtual != null) {
-				BeanUtils.copyProperties(restaurante, restauranteAtual.get(), "id", "formasPagamento", "dataCadastro", "produtos");
-				
-				Restaurante restauranteSalvo = restauranteService.salvar(restauranteAtual.get());
-				
-				return ResponseEntity.status(HttpStatus.CREATED).body(restauranteSalvo);
-			}
-			
-			System.out.println(restauranteAtual);
-			
-			return ResponseEntity.notFound().build();
-		}
-		catch(EntidadeNaoEncontradaException e) {
-			return ResponseEntity.badRequest()
-					.body(e.getMessage());
-		}
+	public Restaurante atualizar(@PathVariable Long id, @RequestBody Restaurante restaurante) {
+
+		Restaurante restauranteAtual = restauranteService.buscarOuFalhar(id);
+
+		BeanUtils.copyProperties(restaurante, restauranteAtual, "id", "formasPagamento", "dataCadastro",
+				"produtos");
+
+		return restauranteService.salvar(restauranteAtual);
+
 	}
-	
-	
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Restaurante> remover(@PathVariable Long id) {
 		try {
 			restauranteRepository.deleteById(id);
 			return ResponseEntity.noContent().build();
-		}
-		catch(EntidadeNaoEncontradaException e) {
+		} catch (EntidadeNaoEncontradaException e) {
 			return ResponseEntity.notFound().build();
-		}
-		catch(EntidadeEmUsoException e) {
+		} catch (EntidadeEmUsoException e) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		}
 	}
-	
+
 	@GetMapping("/por-nome-e-frete")
-	public List<Restaurante> restaurantePorNomeFrete(String nome, BigDecimal taxaInicial, BigDecimal taxaFinal){
+	public List<Restaurante> restaurantePorNomeFrete(String nome, BigDecimal taxaInicial, BigDecimal taxaFinal) {
 		return restauranteRepository.find(nome, taxaInicial, taxaFinal);
 	}
-	
+
 	@GetMapping("/com-frete-gratis")
-	public List<Restaurante> restaurantesComFreteGratis(String nome){
-		
+	public List<Restaurante> restaurantesComFreteGratis(String nome) {
+
 		return restauranteRepository.findAll(comFreteGratis().and(comNomeSemelhante(nome)));
 	}
-	
+
 }
