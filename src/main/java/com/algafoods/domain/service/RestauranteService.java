@@ -1,7 +1,5 @@
 package com.algafoods.domain.service;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -11,7 +9,6 @@ import com.algafoods.domain.exception.EntidadeEmUsoException;
 import com.algafoods.domain.exception.EntidadeNaoEncontradaException;
 import com.algafoods.domain.model.Cozinha;
 import com.algafoods.domain.model.Restaurante;
-import com.algafoods.domain.repository.CozinhaRepository;
 import com.algafoods.domain.repository.RestauranteRepository;
 
 @Service
@@ -25,22 +22,17 @@ public class RestauranteService {
 	private RestauranteRepository restauranteRepository;
 	
 	@Autowired
-	private CozinhaRepository cozinhaRepository;
+	private CozinhaService cozinhaService;
+	
 	
 	
 	public Restaurante salvar(Restaurante restaurante) {
 		
 		Long cozinhaId = restaurante.getCozinha().getId();
 		
-		Optional<Cozinha> cozinha = cozinhaRepository.findById(cozinhaId);
+		Cozinha cozinha = cozinhaService.buscarOuFalhar(cozinhaId);
 		
-		if(cozinha.isEmpty()) {
-			throw new EntidadeNaoEncontradaException(
-					String.format("Cozinha com id %d não existe", cozinhaId)
-			);
-		}
-		
-		restaurante.setCozinha(cozinha.get());
+		restaurante.setCozinha(cozinha);
 		
 		return restauranteRepository.save(restaurante);
 	}

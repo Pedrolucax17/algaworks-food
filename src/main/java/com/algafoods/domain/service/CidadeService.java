@@ -1,7 +1,5 @@
 package com.algafoods.domain.service;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,7 +10,6 @@ import com.algafoods.domain.exception.EntidadeNaoEncontradaException;
 import com.algafoods.domain.model.Cidade;
 import com.algafoods.domain.model.Estado;
 import com.algafoods.domain.repository.CidadeRepository;
-import com.algafoods.domain.repository.EstadoRepository;
 
 @Service
 public class CidadeService {
@@ -24,19 +21,15 @@ public class CidadeService {
 	private CidadeRepository cidadeRepository;
 	
 	@Autowired
-	private EstadoRepository estadoRepository;
+	private EstadoService estadoService;
 
 	public Cidade salvar(Cidade cidade) {
 
 		Long estadoId = cidade.getEstado().getId();
 
-		Optional<Estado> estado = estadoRepository.findById(estadoId);
+		Estado estado = estadoService.buscarOuFalhar(estadoId);
 
-		if (estado.isEmpty()) {
-			throw new EntidadeNaoEncontradaException(String.format("Cozinha com id %d não existe", estadoId));
-		}
-
-		cidade.setEstado(estado.get());
+		cidade.setEstado(estado);
 
 		return cidadeRepository.save(cidade);
 	}

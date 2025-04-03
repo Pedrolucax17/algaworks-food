@@ -13,8 +13,8 @@ import com.algafoods.domain.repository.EstadoRepository;
 @Service
 public class EstadoService {
 
-	private static final String MSG_ENTIDADE_EM_USO = "Entidade com id %d está em uso";
-	private static final String MSG_ENTIDADE_NAO_ENCONTRADA = "Entidade com id %d não existe";
+	private static final String MSG_ENTIDADE_EM_USO = "Estado com id %d está em uso";
+	private static final String MSG_ENTIDADE_NAO_ENCONTRADA = "Estado com id %d não existe";
 	@Autowired
 	private EstadoRepository estadoRepository;
 
