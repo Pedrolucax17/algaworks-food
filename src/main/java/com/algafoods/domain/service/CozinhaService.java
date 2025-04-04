@@ -5,17 +5,17 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.algafoods.domain.exception.CozinhaNaoEncontradaException;
 import com.algafoods.domain.exception.EntidadeEmUsoException;
-import com.algafoods.domain.exception.EntidadeNaoEncontradaException;
 import com.algafoods.domain.model.Cozinha;
 import com.algafoods.domain.repository.CozinhaRepository;
 
 @Service
 public class CozinhaService {
 
-	private static final String MSG_COZINHA_EM_USO = "Entidade com id %d está em uso";
+	private static final String MSG_COZINHA_EM_USO = "Cozinha com id %d está em uso";
 
-	private static final String MSG_COZINHA_NAO_ENCONTRADA = "Não existe um cadastro com o Id: %d";
+	private static final String MSG_COZINHA_NAO_ENCONTRADA = "Não existe um cadastro de cozinha com o Id: %d";
 	
 	@Autowired
 	private CozinhaRepository cozinhaRepository;
@@ -29,7 +29,7 @@ public class CozinhaService {
 			cozinhaRepository.deleteById(id);
 		}
 		catch(EmptyResultDataAccessException e) {
-			throw new EntidadeNaoEncontradaException(String.format(MSG_COZINHA_NAO_ENCONTRADA, id));		
+			throw new CozinhaNaoEncontradaException(String.format(MSG_COZINHA_NAO_ENCONTRADA, id));		
 		}
 		catch(DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(String.format(MSG_COZINHA_EM_USO, id));
@@ -39,7 +39,7 @@ public class CozinhaService {
 	
 	public Cozinha buscarOuFalhar(Long id) {
 		return cozinhaRepository.findById(id).orElseThrow(
-				() -> new EntidadeNaoEncontradaException(String.format(MSG_COZINHA_NAO_ENCONTRADA, id)));
+				() -> new CozinhaNaoEncontradaException(String.format(MSG_COZINHA_NAO_ENCONTRADA, id)));
 	}
 	
 	
