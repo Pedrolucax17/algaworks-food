@@ -17,6 +17,7 @@ import com.algafoods.domain.exception.EntidadeEmUsoException;
 import com.algafoods.domain.exception.EntidadeNaoEncontradaException;
 import com.algafoods.domain.exception.NegocioException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
@@ -30,6 +31,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		if (causeRoot instanceof InvalidFormatException) {
 			return handleInvalidFormatException((InvalidFormatException) causeRoot, headers, (HttpStatus) status,
 					request);
+		}else if(causeRoot instanceof PropertyBindingException) {
+			return handlePropertyBindingException((PropertyBindingException) causeRoot, headers, status, request);
 		}
 
 		ProblemType problemType = ProblemType.MENSAGEM_INCOMPREEENSIVEL;
@@ -54,6 +57,21 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 		Problem problem = createProblemBuilder((HttpStatus) status, problemType, detail).build();
 
+		return handleExceptionInternal(ex, problem, headers, status, request);
+	}
+	
+	private ResponseEntity<Object> handlePropertyBindingException(PropertyBindingException ex, HttpHeaders headers,
+			HttpStatusCode status, WebRequest request) {
+		
+		String path = ex.getPath().stream()
+				.map(ref -> ref.getFieldName())
+				.collect(Collectors.joining("."));
+		
+		ProblemType problemType = ProblemType.MENSAGEM_INCOMPREEENSIVEL;
+		String detail = String.format("A propriedade '%s' não é válida", ex.getPropertyName());
+		
+		Problem problem = createProblemBuilder((HttpStatus) status, problemType, detail).build();
+		
 		return handleExceptionInternal(ex, problem, headers, status, request);
 	}
 

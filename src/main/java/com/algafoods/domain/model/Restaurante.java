@@ -44,6 +44,7 @@ public class Restaurante {
 	
 	@Embedded
 	@Column(nullable = false)
+	@JsonIgnore
 	private Endereco endereco;
 	
 	@CreationTimestamp
