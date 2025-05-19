@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -23,6 +24,19 @@ import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+	
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		
+		ProblemType problemType = ProblemType.DADOS_INVALIDOS;
+
+		String detail = String.format("Um os mais campos estão inválidos. Faça o preenchimento correto e tente novamente.");
+
+		Problem problem = createProblemBuilder((HttpStatus) status, problemType, detail).build();
+
+		return handleExceptionInternal(ex, problem, headers, status, request);
+	}
 	
 	@Override
 	protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers,

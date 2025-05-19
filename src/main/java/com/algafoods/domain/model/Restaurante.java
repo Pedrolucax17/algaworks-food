@@ -22,6 +22,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -33,6 +34,7 @@ public class Restaurante {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotNull
 	private String nome;
 	
 	@Column(name = "taxa_frete")
@@ -47,10 +49,12 @@ public class Restaurante {
 	@JsonIgnore
 	private Endereco endereco;
 	
+	@JsonIgnore
 	@CreationTimestamp
 	@Column(nullable = false)
 	private LocalDateTime dataCadastro;
 	
+	@JsonIgnore
 	@UpdateTimestamp
 	private LocalDateTime dataAtualizacao;
 	
@@ -61,6 +65,7 @@ public class Restaurante {
 			inverseJoinColumns = @JoinColumn(name = "forma_pagamento_id"))
 	private List<FormaPagamento> formasPagamento = new ArrayList<>();
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "restaurante")
 	private List<Produto> produtos;
 	

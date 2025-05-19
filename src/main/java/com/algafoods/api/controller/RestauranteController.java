@@ -28,6 +28,8 @@ import com.algafoods.domain.model.Restaurante;
 import com.algafoods.domain.repository.RestauranteRepository;
 import com.algafoods.domain.service.RestauranteService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/restaurantes")
 public class RestauranteController {
@@ -51,7 +53,7 @@ public class RestauranteController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Restaurante salvar(@RequestBody Restaurante restaurante) {
+	public Restaurante salvar(@RequestBody @Valid Restaurante restaurante) {
 		try {
 			return restauranteService.salvar(restaurante);		
 		}
