@@ -8,6 +8,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.algafoods.Groups;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -35,7 +36,7 @@ public class Restaurante {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotNull
+	@NotNull(groups = Groups.CadastroRestaurante.class)
 	private String nome;
 	
 	@Column(name = "taxa_frete")
@@ -43,7 +44,7 @@ public class Restaurante {
 	
 	@ManyToOne
 	@JoinColumn(name = "cozinha_id", nullable = false)
-	@NotNull
+	@NotNull(groups = Groups.CadastroRestaurante.class)
 	@Valid
 	private Cozinha cozinha;
 	

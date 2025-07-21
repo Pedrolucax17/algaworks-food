@@ -19,6 +19,8 @@ import com.algafoods.domain.model.Cozinha;
 import com.algafoods.domain.repository.CozinhaRepository;
 import com.algafoods.domain.service.CozinhaService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/cozinhas")
 public class CozinhaController {
@@ -42,7 +44,7 @@ public class CozinhaController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Cozinha salvar(@RequestBody Cozinha cozinha) {
+	public Cozinha salvar(@RequestBody @Valid Cozinha cozinha) {
 		return cozinhaRepository.save(cozinha);
 	}
 
