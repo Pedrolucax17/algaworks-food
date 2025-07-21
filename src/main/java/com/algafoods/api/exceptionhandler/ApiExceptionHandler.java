@@ -1,5 +1,7 @@
 package com.algafoods.api.exceptionhandler;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -9,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,8 +35,20 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		ProblemType problemType = ProblemType.DADOS_INVALIDOS;
 
 		String detail = String.format("Um os mais campos estão inválidos. Faça o preenchimento correto e tente novamente.");
+		
+		BindingResult bindingResult = ex.getBindingResult();
+		
+		List<Problem.Field> problemFields = bindingResult.getFieldErrors().stream()
+				.map(fieldError -> Problem.Field.builder()
+						.name(fieldError.getField())
+						.userMessage(fieldError.getDefaultMessage())
+						.build())
+				.collect(Collectors.toList());
 
-		Problem problem = createProblemBuilder((HttpStatus) status, problemType, detail).build();
+		Problem problem = createProblemBuilder((HttpStatus) status, problemType, detail)
+				.userMessage(detail)
+				.fields(problemFields)
+				.build();
 
 		return handleExceptionInternal(ex, problem, headers, status, request);
 	}
@@ -113,13 +128,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Object> handleUncaught(Exception e, WebRequest request){
-		HttpStatus status = HttpStatus.BAD_REQUEST;
+		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 		
 		ProblemType problemType = ProblemType.ERRO_DE_SISTEMA;
 		
 		String detail = "Ocorreu um erro interno inesperado no sistema. "
 	            + "Tente novamente e se o problema persistir, entre em contato "
 	            + "com o administrador do sistema.";
+		
+		e.printStackTrace();
 		
 		Problem problem = createProblemBuilder(status, problemType, detail).build();
 		
@@ -179,7 +196,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 	private Problem.ProblemBuilder createProblemBuilder(HttpStatus status, ProblemType problemType, String detail) {
 
-		return Problem.builder().status(status.value()).title(problemType.getTitle()).type(problemType.getUri())
+		return Problem.builder().status(status.value()).timeStamp(LocalDateTime.now()).title(problemType.getTitle()).type(problemType.getUri())
 				.details(detail);
 	}
 

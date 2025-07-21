@@ -22,6 +22,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -42,6 +43,8 @@ public class Restaurante {
 	
 	@ManyToOne
 	@JoinColumn(name = "cozinha_id", nullable = false)
+	@NotNull
+	@Valid
 	private Cozinha cozinha;
 	
 	@Embedded
