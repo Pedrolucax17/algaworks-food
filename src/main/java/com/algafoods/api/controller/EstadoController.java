@@ -22,6 +22,8 @@ import com.algafoods.domain.model.Estado;
 import com.algafoods.domain.repository.EstadoRepository;
 import com.algafoods.domain.service.EstadoService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/estados")
 public class EstadoController {
@@ -45,12 +47,12 @@ public class EstadoController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Estado salvar(@RequestBody Estado estado) {
+	public Estado salvar(@RequestBody @Valid Estado estado) {
 		return estadoService.salvar(estado);
 	}
 
 	@PutMapping("/{id}")
-	public Estado atualizar(@PathVariable Long id, @RequestBody Estado estado) {
+	public Estado atualizar(@PathVariable Long id, @RequestBody @Valid Estado estado) {
 		Estado estadoAtual = estadoService.buscarOuFalhar(id);
 
 		BeanUtils.copyProperties(estado, estadoAtual, "id");

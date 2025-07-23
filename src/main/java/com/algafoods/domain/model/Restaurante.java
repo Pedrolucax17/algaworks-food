@@ -24,7 +24,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.groups.ConvertGroup;
+import jakarta.validation.groups.Default;
 import lombok.Data;
 
 @Data
@@ -36,7 +39,7 @@ public class Restaurante {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotNull(groups = Groups.CadastroRestaurante.class)
+	@NotBlank
 	private String nome;
 	
 	@Column(name = "taxa_frete")
@@ -44,7 +47,8 @@ public class Restaurante {
 	
 	@ManyToOne
 	@JoinColumn(name = "cozinha_id", nullable = false)
-	@NotNull(groups = Groups.CadastroRestaurante.class)
+	@NotNull
+	@ConvertGroup(from = Default.class, to = Groups.CadastroRestaurante.class)
 	@Valid
 	private Cozinha cozinha;
 	
