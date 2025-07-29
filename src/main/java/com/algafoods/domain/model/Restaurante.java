@@ -8,7 +8,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.algafoods.Groups;
+import com.algafoods.core.validation.Groups;
 import com.algafoods.core.validation.TaxaFrete;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

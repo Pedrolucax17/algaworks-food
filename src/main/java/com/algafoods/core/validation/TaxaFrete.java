@@ -23,7 +23,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 public @interface TaxaFrete {
 	
 	@OverridesAttribute(constraint = PositiveOrZero.class, name = "message")
-	String message() default "Testando";
+	String message() default "{TaxaFrete.invalida}";
 
 	Class<?>[] groups() default { };
 	
