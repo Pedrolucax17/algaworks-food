@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.algafoods.Groups;
+import com.algafoods.core.validation.TaxaFrete;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -45,7 +46,7 @@ public class Restaurante {
 	
 	@Column(name = "taxa_frete")
 	@NotNull
-	@PositiveOrZero
+	@TaxaFrete
 	private BigDecimal taxaFrete;	
 	
 	@ManyToOne
