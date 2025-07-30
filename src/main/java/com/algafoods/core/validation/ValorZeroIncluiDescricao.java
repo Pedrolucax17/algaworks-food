@@ -14,7 +14,7 @@ import jakarta.validation.Payload;
 @Constraint(validatedBy = { ValorZeroIncluiDescricaoValidator.class })
 public @interface ValorZeroIncluiDescricao {
 	
-	String message() default "{MultiploInvalido}";
+	String message() default "{ValorZeroIncluiDescricao}";
 
 	Class<?>[] groups() default { };
 	
