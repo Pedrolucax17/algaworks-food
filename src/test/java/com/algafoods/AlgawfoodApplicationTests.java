@@ -1,13 +1,45 @@
 package com.algafoods;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import com.algafoods.domain.model.Cozinha;
+import com.algafoods.domain.service.CozinhaService;
+
+import jakarta.validation.ConstraintViolationException;
 
 @SpringBootTest
 class AlgawfoodApplicationTests {
+	
+	@Autowired
+	private CozinhaService cozinhaService;
 
 	@Test
-	void contextLoads() {
+	public void testarCadastroCozinhaComSucesso() {
+		Cozinha cozinha = new Cozinha();
+		cozinha.setNome("Chinesa");
+		
+		cozinha = cozinhaService.salvar(cozinha);
+		
+		assertThat(cozinha).isNotNull();
+		assertThat(cozinha.getId()).isNotNull();
+	}
+	
+	@Test()
+	public void testarCadastroCozinhaSemNome() {
+		Cozinha cozinha = new Cozinha();
+		cozinha.setNome(null);
+		
+		ConstraintViolationException erroEsperado =
+			      Assertions.assertThrows(ConstraintViolationException.class, () -> {
+			         cozinhaService.salvar(cozinha);
+			      });
+			   
+			   assertThat(erroEsperado).isNotNull();
 	}
 
 }
