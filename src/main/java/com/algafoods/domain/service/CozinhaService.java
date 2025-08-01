@@ -1,8 +1,9 @@
 package com.algafoods.domain.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.algafoods.domain.exception.CozinhaNaoEncontradaException;
@@ -25,11 +26,14 @@ public class CozinhaService {
 	}
 	
 	public void remover(Long id) {
+		Optional<Cozinha> cozinhaOptional = cozinhaRepository.findById(id);
+		
+		if(cozinhaOptional.isEmpty()) {
+			throw new CozinhaNaoEncontradaException(String.format(MSG_COZINHA_NAO_ENCONTRADA, id));
+		}
+		
 		try {
 			cozinhaRepository.deleteById(id);
-		}
-		catch(EmptyResultDataAccessException e) {
-			throw new CozinhaNaoEncontradaException(String.format(MSG_COZINHA_NAO_ENCONTRADA, id));		
 		}
 		catch(DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(String.format(MSG_COZINHA_EM_USO, id));
