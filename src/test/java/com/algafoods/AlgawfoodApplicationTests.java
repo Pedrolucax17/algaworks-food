@@ -2,34 +2,40 @@ package com.algafoods;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.TestPropertySource;
 
 import com.algafoods.domain.exception.CozinhaNaoEncontradaException;
 import com.algafoods.domain.exception.EntidadeEmUsoException;
 import com.algafoods.domain.model.Cozinha;
+import com.algafoods.domain.repository.CozinhaRepository;
 import com.algafoods.domain.service.CozinhaService;
+import com.algafoods.util.DatabaseCleaner;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import jakarta.validation.ConstraintViolationException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource("/application-test.properties")
 class AlgawfoodApplicationTests {
 
 	@Autowired
 	private CozinhaService cozinhaService;
 
-	@Autowired
-	private Flyway flyway;
-
 	@LocalServerPort
 	private int port;
+	
+	@Autowired
+	private DatabaseCleaner databaseCleaner;
+	
+	@Autowired
+	private CozinhaRepository cozinhaRepository;
 
 	@BeforeEach
 	public void setup() {
@@ -38,7 +44,9 @@ class AlgawfoodApplicationTests {
 		RestAssured.basePath = "/cozinhas";
 		RestAssured.port=port;
 
-		flyway.migrate();
+		databaseCleaner.clearTables();
+		
+		prepararDados();
 	}
 
 	@Test
@@ -92,6 +100,16 @@ class AlgawfoodApplicationTests {
 				});
 
 		assertThat(erroEsperado).isNotNull();
+	}
+	
+	private void prepararDados() {
+		Cozinha cozinha1 = new Cozinha();
+		cozinha1.setNome("Tailandesa");
+		cozinhaRepository.save(cozinha1);
+
+		Cozinha cozinha2 = new Cozinha();
+		cozinha2.setNome("Americana");
+		cozinhaRepository.save(cozinha2);
 	}
 
 }
