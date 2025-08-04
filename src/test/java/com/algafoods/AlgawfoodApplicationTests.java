@@ -2,7 +2,9 @@ package com.algafoods;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +14,7 @@ import com.algafoods.domain.exception.EntidadeEmUsoException;
 import com.algafoods.domain.model.Cozinha;
 import com.algafoods.domain.service.CozinhaService;
 
+import io.restassured.RestAssured;
 import jakarta.validation.ConstraintViolationException;
 
 @SpringBootTest
@@ -19,6 +22,21 @@ class AlgawfoodApplicationTests {
 	
 	@Autowired
 	private CozinhaService cozinhaService;
+	
+	@Autowired
+	private Flyway flyway;
+
+	@BeforeAll
+	public void setup() {
+		RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+		
+		RestAssured.port=8080;
+		RestAssured.basePath="/cozinhas";
+		
+		flyway.migrate();
+	}
+	
+	
 
 	@Test
 	public void testarCadastroCozinhaComSucesso() {
