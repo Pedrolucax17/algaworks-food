@@ -12,6 +12,7 @@ import com.algafoods.core.validation.Groups;
 import com.algafoods.core.validation.TaxaFrete;
 import com.algafoods.core.validation.ValorZeroIncluiDescricao;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -55,6 +56,7 @@ public class Restaurante {
 	@NotNull
 	@ConvertGroup(from = Default.class, to = Groups.CadastroRestaurante.class)
 	@Valid
+	@JsonIgnoreProperties(value = "nome", allowGetters = true)
 	private Cozinha cozinha;
 	
 	@Embedded
