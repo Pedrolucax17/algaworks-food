@@ -52,14 +52,7 @@ public class RestauranteController {
 	public RestauranteExibicaoDTO buscar(@PathVariable Long id) {
 		Restaurante restauranteSalvo = restauranteService.buscarOuFalhar(id);
 		
-		RestauranteExibicaoDTO restauranteExibicao = new RestauranteExibicaoDTO();
-		restauranteExibicao.setId(restauranteSalvo.getId());
-		restauranteExibicao.setNome(restauranteSalvo.getNome());
-		restauranteExibicao.setTaxaFrete(restauranteSalvo.getTaxaFrete());
-		CozinhaExibicaoResDTO cozinha = new CozinhaExibicaoResDTO();
-		cozinha.setId(restauranteSalvo.getCozinha().getId());
-		cozinha.setNome(restauranteSalvo.getCozinha().getNome());
-		restauranteExibicao.setCozinha(cozinha);
+		RestauranteExibicaoDTO restauranteExibicao = toModel(restauranteSalvo);
 		
 		return restauranteExibicao;
 		
@@ -112,6 +105,18 @@ public class RestauranteController {
 	public List<Restaurante> restaurantesComFreteGratis(String nome) {
 
 		return restauranteRepository.findAll(comFreteGratis().and(comNomeSemelhante(nome)));
+	}
+	
+	private RestauranteExibicaoDTO toModel(Restaurante restauranteSalvo) {
+		RestauranteExibicaoDTO restauranteExibicao = new RestauranteExibicaoDTO();
+		restauranteExibicao.setId(restauranteSalvo.getId());
+		restauranteExibicao.setNome(restauranteSalvo.getNome());
+		restauranteExibicao.setTaxaFrete(restauranteSalvo.getTaxaFrete());
+		CozinhaExibicaoResDTO cozinha = new CozinhaExibicaoResDTO();
+		cozinha.setId(restauranteSalvo.getCozinha().getId());
+		cozinha.setNome(restauranteSalvo.getCozinha().getNome());
+		restauranteExibicao.setCozinha(cozinha);
+		return restauranteExibicao;
 	}
 
 }
