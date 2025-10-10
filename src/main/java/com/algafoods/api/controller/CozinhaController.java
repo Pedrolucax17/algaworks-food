@@ -2,7 +2,6 @@ package com.algafoods.api.controller;
 
 import java.util.List;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.algafoods.api.assembler.CozinhaInputDisassembler;
 import com.algafoods.api.assembler.CozinhaModelAssembler;
 import com.algafoods.api.model.dto.CozinhaExibicaoDTO;
+import com.algafoods.api.model.dto.CozinhaRegistroDTO;
 import com.algafoods.domain.model.Cozinha;
 import com.algafoods.domain.repository.CozinhaRepository;
 import com.algafoods.domain.service.CozinhaService;
@@ -47,23 +47,26 @@ public class CozinhaController {
 	}
 
 	@GetMapping("/{id}")
-	public Cozinha buscar(@PathVariable Long id) {
-		return cozinhaService.buscarOuFalhar(id);
+	public CozinhaExibicaoDTO buscar(@PathVariable Long id) {
+		Cozinha cozinha = cozinhaService.buscarOuFalhar(id);
+		return cozinhaAssembler.toModel(cozinha);
+		
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Cozinha salvar(@RequestBody @Valid Cozinha cozinha) {
-		return cozinhaRepository.save(cozinha);
+	public CozinhaExibicaoDTO salvar(@RequestBody @Valid CozinhaRegistroDTO cozinhaSalva) {
+		Cozinha cozinha = cozinhaDisassembler.toDomainModel(cozinhaSalva);
+		return cozinhaAssembler.toModel(cozinhaRepository.save(cozinha));
 	}
 
 	@PutMapping("/{id}")
-	public Cozinha atualizar(@PathVariable Long id, @RequestBody @Valid Cozinha cozinha) {
+	public CozinhaExibicaoDTO atualizar(@PathVariable Long id, @RequestBody @Valid CozinhaRegistroDTO cozinha) {
 		Cozinha cozinhaAtual = cozinhaService.buscarOuFalhar(id);
+		
+		cozinhaDisassembler.copyToDomainObject(cozinha, cozinhaAtual);
 
-		BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
-
-		return cozinhaService.salvar(cozinhaAtual);
+		return cozinhaAssembler.toModel(cozinhaService.salvar(cozinhaAtual));
 
 	}
 
