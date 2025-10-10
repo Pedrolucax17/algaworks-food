@@ -6,7 +6,6 @@ import static com.algafoods.infrastructure.repository.spec.RestauranteSpecs.comN
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -83,13 +82,11 @@ public class RestauranteController {
 	public RestauranteExibicaoDTO atualizar(@PathVariable Long id, @RequestBody @Valid RestauranteRegistroDTO restauranteSalvo) {
 		
 		try {
-			Restaurante restaurante = restDisassembler.toDomainModel(restauranteSalvo);
-			
 			Restaurante restauranteAtual = restauranteService.buscarOuFalhar(id);
-
-			BeanUtils.copyProperties(restaurante, restauranteAtual, "id", "formasPagamento", "dataCadastro", "produtos");
 			
-			return restAssembler.toModel(restauranteService.salvar(restaurante));
+			restDisassembler.copyToDomainObject(restauranteSalvo, restauranteAtual);
+			
+			return restAssembler.toModel(restauranteService.salvar(restauranteAtual));
 		}catch(CozinhaNaoEncontradaException e) {
 			throw new NegocioException(e.getMessage());
 		}
