@@ -15,5 +15,5 @@ public class CidadeRegistroDTO {
 	
 	@Valid
 	@NotNull
-	private EstadoIdRegistroDTO estado;
+	private EstadoIdRegistroDTO estadoId;
 }
