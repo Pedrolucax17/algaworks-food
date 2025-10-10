@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.algafoods.api.assembler.CozinhaInputDisassembler;
+import com.algafoods.api.assembler.CozinhaModelAssembler;
+import com.algafoods.api.model.dto.CozinhaExibicaoDTO;
 import com.algafoods.domain.model.Cozinha;
 import com.algafoods.domain.repository.CozinhaRepository;
 import com.algafoods.domain.service.CozinhaService;
@@ -30,11 +33,17 @@ public class CozinhaController {
 
 	@Autowired
 	private CozinhaService cozinhaService;
+	
+	@Autowired
+	private CozinhaInputDisassembler cozinhaDisassembler;
+	
+	@Autowired
+	private CozinhaModelAssembler cozinhaAssembler;
 
 	@GetMapping()
 	@ResponseStatus(HttpStatus.OK)
-	public List<Cozinha> listar() {
-		return cozinhaRepository.findAll();
+	public List<CozinhaExibicaoDTO> listar() {
+		return cozinhaAssembler.toCollectList(cozinhaRepository.findAll());
 	}
 
 	@GetMapping("/{id}")
